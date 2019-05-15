@@ -1,2 +1,3 @@
 runtime: go111
 service: httptoolbox-go111
+main: ./cmd/main

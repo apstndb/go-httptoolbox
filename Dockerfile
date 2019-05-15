@@ -1,15 +1,15 @@
 FROM golang:1.11.5 as builder
 
-WORKDIR /src/github.com/apstndb/go-httptoolbox
+WORKDIR /src
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux go build -v -o httptoolbox
+RUN CGO_ENABLED=0 GOOS=linux go build -v -o main ./cmd/main
 
 FROM alpine
 
 RUN apk add --no-cache curl
 
-COPY --from=builder /src/github.com/apstndb/go-httptoolbox/httptoolbox /httptoolbox
+COPY --from=builder /src/main /main
 
-ENTRYPOINT ["/httptoolbox"]
+ENTRYPOINT ["/main"]
 EXPOSE 8080

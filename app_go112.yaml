@@ -1,2 +1,3 @@
 runtime: go112
 service: httptoolbox-go112
+main: ./cmd/main
