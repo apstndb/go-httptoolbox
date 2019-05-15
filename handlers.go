@@ -90,6 +90,7 @@ func GetEnvs(w http.ResponseWriter, req *http.Request) {
 		fmt.Fprintln(buf, env)
 	}
 	w.WriteHeader(http.StatusOK)
+	w.Write(buf.Bytes())
 }
 
 func ReadContent(w http.ResponseWriter, req *http.Request) {
