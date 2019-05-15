@@ -68,6 +68,7 @@ func ExecDmesg(w http.ResponseWriter, _ *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
+		return
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Write(buf.Bytes())
@@ -98,11 +99,13 @@ func ReadContent(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
+		return
 	}
 	bytes, err := ioutil.ReadFile(r.File)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
+		return
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Write(bytes)
