@@ -37,7 +37,59 @@ func Exec(w http.ResponseWriter, req *http.Request) {
 	w.Write(buf.Bytes())
 }
 
-func WhoAmI(w http.ResponseWriter, r *http.Request) {
+func metadataImpl(path string) ([]byte, error) {
+	hreq, err := http.NewRequest(http.MethodGet, "http://metadata.google.internal/" + path, nil)
+	if err != nil {
+		return nil, err
+	}
+	hreq.Header.Set("Metadata-Flavor", "Google")
+
+	resp, err := http.DefaultClient.Do(hreq)
+	if err != nil {
+		return nil, err
+	}
+
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	return b, nil
+}
+
+func Metadata(w http.ResponseWriter, r *http.Request) {
+	b, err := metadataImpl(r.URL.Query().Get("path"))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(b)
+}
+
+func Email(w http.ResponseWriter, r *http.Request) {
+	hreq, err := http.NewRequest(http.MethodGet, "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/email", nil)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+
+		return
+	}
+	hreq.Header.Set("Metadata-Flavor", "Google")
+
+	resp, err := http.DefaultClient.Do(hreq)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	io.Copy(w, resp.Body)
+}
+
+func TokenInfo(w http.ResponseWriter, r *http.Request) {
 	tokenSource, err := google.DefaultTokenSource(r.Context())
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

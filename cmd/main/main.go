@@ -15,7 +15,9 @@ func main() {
 	mux.HandleFunc("/dmesg", httptoolbox.ExecDmesg)
 	mux.HandleFunc("/envs", httptoolbox.GetEnvs)
 	mux.HandleFunc("/headers", httptoolbox.GetHeaders)
-	mux.HandleFunc("/whoami", httptoolbox.WhoAmI)
+	mux.HandleFunc("/tokeninfo", httptoolbox.TokenInfo)
+	mux.HandleFunc("/email", httptoolbox.Email)
+	mux.HandleFunc("/metadata", httptoolbox.Metadata)
 	listenAndServe(mux)
 }
 
