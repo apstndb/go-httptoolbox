@@ -68,25 +68,14 @@ func Metadata(w http.ResponseWriter, r *http.Request) {
 }
 
 func Email(w http.ResponseWriter, r *http.Request) {
-	hreq, err := http.NewRequest(http.MethodGet, "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/email", nil)
+	b, err := metadataImpl("/computeMetadata/v1/instance/service-accounts/default/email")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
-
 		return
 	}
-	hreq.Header.Set("Metadata-Flavor", "Google")
-
-	resp, err := http.DefaultClient.Do(hreq)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
-
-		return
-	}
-
 	w.WriteHeader(http.StatusOK)
-	io.Copy(w, resp.Body)
+	w.Write(b)
 }
 
 func TokenInfo(w http.ResponseWriter, r *http.Request) {
