@@ -20,8 +20,7 @@ func Exec(w http.ResponseWriter, req *http.Request) {
 	var r request
 	err := json.NewDecoder(req.Body).Decode(&r)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	cmd := exec.Command(r.File, r.Args...)
@@ -29,8 +28,7 @@ func Exec(w http.ResponseWriter, req *http.Request) {
 	cmd.Stdout = buf
 	err = cmd.Run()
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -63,8 +61,7 @@ func metadataImpl(path string) ([]byte, error) {
 func Metadata(w http.ResponseWriter, r *http.Request) {
 	b, err := metadataImpl(r.URL.Query().Get("path"))
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -74,8 +71,7 @@ func Metadata(w http.ResponseWriter, r *http.Request) {
 func Email(w http.ResponseWriter, r *http.Request) {
 	b, err := metadataImpl("/computeMetadata/v1/instance/service-accounts/default/email")
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -85,20 +81,17 @@ func Email(w http.ResponseWriter, r *http.Request) {
 func TokenInfo(w http.ResponseWriter, r *http.Request) {
 	tokenSource, err := google.DefaultTokenSource(r.Context())
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	token, err := tokenSource.Token()
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	resp, err := http.Get("https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=" + token.AccessToken)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -111,8 +104,7 @@ func ExecDmesg(w http.ResponseWriter, _ *http.Request) {
 	cmd.Stdout = buf
 	err := cmd.Run()
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -143,14 +135,12 @@ func ReadContent(w http.ResponseWriter, req *http.Request) {
 	var r request
 	err := json.NewDecoder(req.Body).Decode(&r)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	bytes, err := ioutil.ReadFile(r.File)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
