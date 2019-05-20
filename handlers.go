@@ -49,6 +49,10 @@ func metadataImpl(path string) ([]byte, error) {
 		return nil, err
 	}
 
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("response is not 200: %d", resp.StatusCode)
+	}
+
 	b, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
