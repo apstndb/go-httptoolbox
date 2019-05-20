@@ -152,3 +152,7 @@ func ReadContent(w http.ResponseWriter, req *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write(bytes)
 }
+
+func DumpRequest(w http.ResponseWriter, req *http.Request) {
+	req.Write(w)
+}

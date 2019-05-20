@@ -18,6 +18,7 @@ func main() {
 	mux.HandleFunc("/tokeninfo", httptoolbox.TokenInfo)
 	mux.HandleFunc("/email", httptoolbox.Email)
 	mux.HandleFunc("/metadata", httptoolbox.Metadata)
+	mux.HandleFunc("/", httptoolbox.DumpRequest)
 	listenAndServe(mux)
 }
 
