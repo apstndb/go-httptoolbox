@@ -4,12 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"golang.org/x/oauth2/google"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"os/exec"
+
+	"cloud.google.com/go/compute/metadata"
+	"golang.org/x/oauth2/google"
 )
 
 func Exec(w http.ResponseWriter, req *http.Request) {
@@ -35,47 +37,24 @@ func Exec(w http.ResponseWriter, req *http.Request) {
 	w.Write(buf.Bytes())
 }
 
-func metadataImpl(path string) ([]byte, error) {
-	hreq, err := http.NewRequest(http.MethodGet, "http://metadata.google.internal/" + path, nil)
-	if err != nil {
-		return nil, err
-	}
-	hreq.Header.Set("Metadata-Flavor", "Google")
-
-	resp, err := http.DefaultClient.Do(hreq)
-	if err != nil {
-		return nil, err
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("response is not 200: %d", resp.StatusCode)
-	}
-
-	b, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	return b, nil
-}
-
 func Metadata(w http.ResponseWriter, r *http.Request) {
-	b, err := metadataImpl(r.URL.Query().Get("path"))
+	result, err := metadata.Get(r.URL.Query().Get("path"))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	w.Write(b)
+	fmt.Fprint(w, result)
 }
 
 func Email(w http.ResponseWriter, r *http.Request) {
-	b, err := metadataImpl("/computeMetadata/v1/instance/service-accounts/default/email")
+	email, err := metadata.Get("instance/service-accounts/default/email")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	w.Write(b)
+	fmt.Fprint(w, email)
 }
 
 func TokenInfo(w http.ResponseWriter, r *http.Request) {
