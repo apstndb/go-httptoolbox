@@ -129,3 +129,17 @@ func ReadContent(w http.ResponseWriter, req *http.Request) {
 func DumpRequest(w http.ResponseWriter, req *http.Request) {
 	req.Write(w)
 }
+
+func WriteEnvs(w http.ResponseWriter, req *http.Request) {
+	for _, env := range os.Environ() {
+		fmt.Println(env)
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
+func WriteHeaders(w http.ResponseWriter, req *http.Request) {
+	for k, v := range req.Header {
+		fmt.Printf("%s=%v\n", k, v)
+	}
+	w.WriteHeader(http.StatusOK)
+}
