@@ -24,7 +24,14 @@ $ gcloud app deploy app_go112.yaml
 ### Cloud Run
 
 ```
+# Use Cloud Build
 $ gcloud builds submit -t gcr.io/${PROJECT_ID}/httptoolbox 
+# or use GCP Buildpacks
+$ pack build --builder gcr.io/buildpacks/builder -e GOOGLE_BUILDABLE=./cmd/main --publish gcr.io/${PROJECT_ID}/httptoolbox 
+$ gcloud run deploy --image gcr.io/${PROJECT_ID}/httptoolbox 
+```
+
+```
 $ gcloud run deploy --image gcr.io/${PROJECT_ID}/httptoolbox 
 ```
 
