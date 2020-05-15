@@ -48,11 +48,22 @@ $ pack build --builder gcr.io/buildpacks/builder -e GOOGLE_BUILDABLE=./cmd/main 
 $ docker run -p 8080:8080 --rm go-httptoolbox-app 
 ```
 
+You can use `gcloud alpha builds submit --pack`.
+
+```
+$ gcloud alpha builds submit --pack=builder=gcr.io/buildpacks/builder,env=GOOGLE_BUILDABLE=./cmd/main,image=gcr.io/${PROJECT_ID}/go-httptoolbox-app
+```
 
 ### GCP Buildpacks for Function
 
 ```
 $ pack build --builder gcr.io/buildpacks/builder -e GOOGLE_FUNCTION_TARGET=DumpRequest go-httptoolbox-function
+
 $ docker run -p 8080:8080 --rm go-httptoolbox-function 
 ```
 
+You can use `gcloud alpha builds submit --pack`.
+
+```
+$ gcloud alpha builds submit --pack=builder=gcr.io/buildpacks/builder,env=GOOGLE_FUNCTION_TARGET=DumpRequest,image=gcr.io/${PROJECT_ID}/go-httptoolbox-function
+```
